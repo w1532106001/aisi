@@ -2,7 +2,6 @@ import 'package:aisi/common/base_view.dart';
 import 'package:aisi/model/provider/main_drawer_model.dart';
 import 'package:aisi/ui/view/download_View.dart';
 import 'package:aisi/ui/view/home_view.dart';
-import 'file:///C:/Users/whc/Documents/aisi/aisi/lib/ui/widget/main_drawer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

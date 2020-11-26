@@ -1,10 +1,8 @@
 class Address {
-  static String baseUrl = "http://24meinv.com/";
+  static String baseUrl = "https://www.24tupian.org/";
 
-  static final String videoHomePageDataUrl = "index/videoHomePageData";
-  static final String categoryGroupListUrl = "index/tagGroupList?type=0";
-  static final String videoCategoryPageUrl = "index/videoList";
-  static final String videoSearchPageUrl = "index/videoList";
-  static final String videoDetailDataUrl = "index/videoDetailData";
-  static final String personUrl = "person/";
+  static final String gaoqingmeinv = baseUrl+"meinv_1.html";
+  static final String ribenmeinv = baseUrl+"nvyou";
+  static final String meimvmote = baseUrl+"model";
+  static final String zuixin = baseUrl+"daymeinv";
 }
