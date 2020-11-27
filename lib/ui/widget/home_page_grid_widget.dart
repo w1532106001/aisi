@@ -3,8 +3,10 @@ import 'package:aisi/model/entity/pictures_set.dart';
 import 'package:aisi/net/address.dart';
 import 'package:aisi/net/data_helper.dart';
 import 'package:aisi/net/http_manager.dart';
+import 'package:aisi/ui/widget/item_pictures_set_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:aisi/common/extension.dart';
 
 class HomePageGridWidget extends BaseView{
   const HomePageGridWidget({Key key}) : super(key: key);
@@ -27,9 +29,10 @@ class HomePageGridWidget extends BaseView{
               PicturesSet picturesSet = new PicturesSet();
               var list = picturesSet.parsePicturesSetUrl(snapshot.data).originalImageUrlList;
               // 请求成功，显示数据
-              return ListView.builder(itemCount: list.length,
+              return ListView.builder(
+                itemCount: list.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Image.network(list[index]);
+                  return ItemPicturesSetWidget();
                 },);
             }
           } else {

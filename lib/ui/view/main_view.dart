@@ -1,5 +1,6 @@
 import 'package:aisi/common/base_view.dart';
 import 'package:aisi/model/provider/main_drawer_model.dart';
+import 'package:aisi/res/colors.dart';
 import 'package:aisi/ui/view/download_View.dart';
 import 'package:aisi/ui/view/home_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,7 @@ class MainView extends BaseView {
     return ChangeNotifierProvider(
       create: (_) => MainDrawerModel(),
       child: Scaffold(
+        backgroundColor: Colours.bk_gray,
           body: Consumer<MainDrawerModel>(
               builder: (_, mainDrawerModel, __) =>
                   IndexedStack(

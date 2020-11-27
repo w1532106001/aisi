@@ -1,4 +1,5 @@
 import 'package:aisi/common/base_view.dart';
+import 'package:aisi/res/colors.dart';
 import 'package:aisi/ui/widget/home_page_grid_widget.dart';
 import 'package:aisi/ui/widget/main_drawer.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +15,7 @@ class HomeView extends BaseView {
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
+        backgroundColor: Colours.bk_gray,
         appBar: AppBar(
           title: Text('主页'),
           centerTitle: true,
