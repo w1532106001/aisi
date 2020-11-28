@@ -1,17 +1,26 @@
-import 'package:aisi/common/base_view.dart';
+import 'package:aisi/common/base_stateless_view.dart';
+import 'package:aisi/net/address.dart';
 import 'package:aisi/res/colors.dart';
-import 'package:aisi/ui/widget/home_page_grid_widget.dart';
+import 'package:aisi/ui/widget/list_model_widget.dart';
+import 'package:aisi/ui/widget/list_pictures_set_widget.dart';
 import 'package:aisi/ui/widget/main_drawer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class HomeView extends BaseView {
+class HomeView extends BaseStatelessView {
   const HomeView({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     print('主页');
-    final List tabs = ["新闻", "历史", "图片"];
+    final Map tabs = Map.from({
+      "国产": Address.gaoqingmeinv,
+      "日本": Address.ribenmeinv,
+      "丝袜美腿": Address.siwameitui,
+      "模特": Address.meimvmote,
+      "最新": Address.zuixin,
+      "社团": "",
+    });
     return DefaultTabController(
       length: tabs.length,
       child: Scaffold(
@@ -20,7 +29,8 @@ class HomeView extends BaseView {
           title: Text('主页'),
           centerTitle: true,
           bottom: TabBar(
-            tabs: tabs
+            isScrollable: true,
+            tabs: tabs.keys
                 .map((e) => Tab(
                       text: e,
                     ))
@@ -30,16 +40,17 @@ class HomeView extends BaseView {
         ),
         drawer: MainDrawer(),
         body: TabBarView(
-          children: tabs
+          children: tabs.values
               .map((e) => Container(
                     alignment: Alignment.center,
-                    child:
-            HomePageGridWidget()
+                    child: e == Address.meimvmote
+                        ? ListModelWidget(e)
+                        : ListPicturesSetWidget(e)
 //                    Text(
 //                      e,
 //                      textScaleFactor: 5,
 //                    )
-            ,
+                    ,
                   ))
               .toList(),
         ),

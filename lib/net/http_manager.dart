@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+
+import 'address.dart';
 import 'dio_log_interceptor.dart';
 import 'response_interceptor.dart';
-import 'address.dart';
 
 class HttpManager {
   static HttpManager _instance = HttpManager._internal();
@@ -61,5 +64,26 @@ class HttpManager {
     Response response;
     response = await _dio.post(api, queryParameters: params);
     return response.data;
+  }
+
+  download(api, params,path, {ProgressCallback onReceiveProgress}) async {
+    try {
+      Response response = await _dio.get(
+        api,
+        onReceiveProgress: onReceiveProgress,
+        //Received data with List<int>
+        options: Options(
+            responseType: ResponseType.bytes,),
+      );
+      print('123');
+      File file = File(path);
+      var raf = await file.open(mode: FileMode.write);
+      // response.data is List<int> type
+      await raf.writeFrom(response.data);
+      await raf.close();
+    } catch (e) {
+      print(e);
+    }
+    print('下载完成');
   }
 }

@@ -1,4 +1,4 @@
-import 'package:aisi/common/base_view.dart';
+import 'package:aisi/common/base_stateless_view.dart';
 import 'package:aisi/model/provider/main_drawer_model.dart';
 import 'package:aisi/res/colors.dart';
 import 'package:aisi/ui/view/download_View.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MainView extends BaseView {
+class MainView extends BaseStatelessView {
   const MainView({Key key}) : super(key: key);
 
   @override

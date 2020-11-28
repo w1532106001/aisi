@@ -1,9 +1,13 @@
+import 'package:aisi/model/entity/model.dart';
+import 'package:aisi/net/data_helper.dart';
+import 'package:aisi/net/http_manager.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_html/html_parser.dart';
 
 class PicturesSet{
   String cover;
   String name;
-  int quantity = 30;
+  int quantity;
   String fileSize;
   String updateTime;
   int clickNum;
@@ -50,11 +54,15 @@ class PicturesSet{
             picturesSet.downNum = int.tryParse(downNum.trim());
           }
           if(element.outerHtml.contains("隶属")){
-            var a = element.querySelector('a');
-            var associationName = a.text;
-            var associationUrl = a.attributes['href'];
+            var a = element.querySelectorAll('a');
+            var associationName = a[0].text;
+            var associationUrl = a[0].attributes['href'];
             picturesSet.associationName = associationName.trim();
             picturesSet.associationUrl = associationUrl.trim();
+            if(a.length>1){
+              picturesSet.modelName = a[1].text.trim();
+              picturesSet.modelUrl = a[1].attributes['href'].trim();
+            }
           }
         });
         picturesSetList.add(picturesSet);
@@ -66,34 +74,121 @@ class PicturesSet{
   }
 
   // ignore: missing_return
-   PicturesSet parsePicturesSetUrl(String data){
+   PicturesSet parsePicturesSetUrl(String data) {
     try{
       var html = HtmlParser.parseHTML(data);
       var hd3 = html.getElementsByClassName('hd3')[0];
-      var gr = hd3.getElementsByClassName('gr')[0];
-      if(gr.text.indexOf('的所有')!=-1){
-        this.modelName = gr.text.substring(0,gr.text.indexOf('的所有')-3);
-        this.modelUrl = gr.attributes['href'];
+      var gr = hd3.getElementsByClassName('gr');
+      if(gr.length>0 && gr[0].text.indexOf('的所有')!=-1){
+        this.modelName = gr[0].text.substring(0,gr[0].text.indexOf('的所有')-3);
+        this.modelUrl = gr[0].attributes['href'];
       }
 
       var time = hd3.text.substring(hd3.text.indexOf('发布时间：')+5).trim();
       if(time.isNotEmpty){
         this.updateTime = time;
       }
-      String firstImageUrl = html.querySelector('body > div.box > div.certen2 > div.gtps.fl > ul > li:nth-child(1) > a > img').attributes['src'];
-      var thumbnailUrlTemplate = firstImageUrl.replaceAll("1.jpg", '');
-      var originalImageUrlTemplate = thumbnailUrlTemplate.replaceAll("m24mnorg", '24mnorg');
+
       this.thumbnailUrlList.clear();
       this.originalImageUrlList.clear();
-      for (int i = 1; i <= quantity; i++) {
-        this.thumbnailUrlList.add(thumbnailUrlTemplate+i.toString()+".jpg");
-        this.originalImageUrlList.add(originalImageUrlTemplate+i.toString()+".jpg");
-        print(originalImageUrlTemplate+i.toString()+".jpg");
-      }
+
+      //保存当前第一页的图片
+      var lis = html.querySelectorAll('div.gtps.fl > ul > li');
+      lis.forEach((element) {
+        this.thumbnailUrlList.add(element.querySelector('img').attributes['src']);
+      });
+
+      var aArray = html.getElementsByClassName('page ps')[0].querySelectorAll('a');
+      var totalPage = int.tryParse(
+          aArray[aArray.length-3].text.trim());
+
+        var params = DataHelper.getBaseMap();
+      Future.sync(HttpManager.getInstance()
+          .get(url.replaceAll('.html', '') +'_'+ 2.toString() + ".html", params)).whenComplete(() =>
+          print('complete'));
+
+      // Future.sync<String>(HttpManager.getInstance()
+      //     .get(url.replaceAll('.html', '') +'_'+ 2.toString() + ".html", params)).then((value) =>
+      //     print(value)
+      // ).catchError((e){
+      //   print(e);
+      // });
+
+      // if(totalPage>1){
+      //   var params = DataHelper.getBaseMap();
+      //   for(int i = 2;i<=totalPage;i++){
+      //   Future.sync(HttpManager.getInstance()
+      //       .get(url +'_'+ i.toString() + ".html", params)).then((value) =>
+      //       print(value)
+      //   ).catchError((e){
+      //     print(e);
+      //     });
+      //  }
+      // }
+
+
+
+      // for (int i = 1; i <= quantity; i++) {
+      //   this.thumbnailUrlList.add(thumbnailUrlTemplate+i.toString()+".jpg");
+      //   this.originalImageUrlList.add(originalImageUrlTemplate+i.toString()+".jpg");
+      //   print(originalImageUrlTemplate+i.toString()+".jpg");
+      // }
     }catch(e){
-      print('解析异常');
+      print('解析异常'+e);
     }
     return this;
   }
 
+   parsePicturesSet(url) async{
+    var params = DataHelper.getBaseMap();
+    var response = await HttpManager.getInstance().get(url, params);
+    try{
+    var html = HtmlParser.parseHTML(response);
+    var hd3 = html.getElementsByClassName('hd3')[0];
+    var gr = hd3.getElementsByClassName('gr');
+    if(gr.length>0 && gr[0].text.indexOf('的所有')!=-1){
+      this.modelName = gr[0].text.substring(0,gr[0].text.indexOf('的所有')-3);
+      this.modelUrl = gr[0].attributes['href'];
+    }
+
+    var time = hd3.text.substring(hd3.text.indexOf('发布时间：')+5).trim();
+    if(time.isNotEmpty){
+      this.updateTime = time;
+    }
+    String firstImageUrl = html.querySelector('body > div.box > div.certen2 > div.gtps.fl > ul > li:nth-child(1) > a > img').attributes['src'];
+    var thumbnailUrlTemplate = firstImageUrl.replaceAll("1.jpg", '');
+    int lastIndex = thumbnailUrlTemplate.lastIndexOf("/");
+    this.thumbnailUrlList.clear();
+    this.originalImageUrlList.clear();
+
+    //保存当前第一页的图片
+    var lis = html.querySelectorAll('div.gtps.fl > ul > li');
+    lis.forEach((element) {
+      this.thumbnailUrlList.add(element.querySelector('img').attributes['src']);
+    });
+
+    var aArray = html.getElementsByClassName('page ps')[0].querySelectorAll('a');
+    var totalPage = int.tryParse(
+    aArray[aArray.length-3].text.trim());
+
+    for (int i = 1; i <= totalPage; i++) {
+      var response = await HttpManager.getInstance().get(url.replaceAll('.html', '') +'_'+ i.toString() + ".html", params);
+      var html = HtmlParser.parseHTML(response);
+      var lis = html.querySelectorAll('div.gtps.fl > ul > li');
+      lis.forEach((element) {
+        this.thumbnailUrlList.add(element.querySelector('img').attributes['src']);
+      });
+      }
+
+    this.thumbnailUrlList.forEach((element) {
+      int lastIndex = element.lastIndexOf("/");
+      var originalImageUrl = element.replaceRange(lastIndex, lastIndex+2, "/");
+      this.originalImageUrlList.add(originalImageUrl);
+    });
+    }catch(e){
+    print('解析异常'+e);
+    }
+
+   return this;
+  }
 }

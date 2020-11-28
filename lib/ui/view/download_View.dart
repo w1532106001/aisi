@@ -1,8 +1,8 @@
-import 'package:aisi/common/base_view.dart';
+import 'package:aisi/common/base_stateless_view.dart';
 import 'package:aisi/ui/widget/main_drawer.dart';
 import 'package:flutter/material.dart';
 
-class DownLoadView extends BaseView{
+class DownLoadView extends BaseStatelessView{
   const DownLoadView({Key key}) : super(key: key);
 
   @override

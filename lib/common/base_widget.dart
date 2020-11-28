@@ -3,15 +3,7 @@ import 'package:flutter/material.dart';
 import '../res/dimens.dart';
 import 'mvp_view.dart';
 
-
-class BaseView extends StatelessWidget implements MvpView {
-  const BaseView({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-
+class BaseWidget implements MvpView  {
   @override
   hideProgressDialog() {
     BotToast.closeAllLoading();
@@ -52,23 +44,23 @@ class BaseView extends StatelessWidget implements MvpView {
   Widget showLoadingWithMessage(String message) {
     return Center(
         child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        CircularProgressIndicator(),
-        Padding(
-            padding: EdgeInsets.only(top: Dimens.gap_dp12),
-            child: Text(
-              message,
-              style: TextStyle(color: Colors.black, fontSize: Dimens.font_sp18),
-            ))
-      ],
-    ));
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            Padding(
+                padding: EdgeInsets.only(top: Dimens.gap_dp12),
+                child: Text(
+                  message,
+                  style: TextStyle(color: Colors.black, fontSize: Dimens.font_sp18),
+                ))
+          ],
+        ));
   }
 
   @override
   showMessage(String message) {
-    BotToast.showSimpleNotification(title: message);
+    BotToast.showText(text: message);
   }
 
   @override
