@@ -1,6 +1,8 @@
+import 'package:aisi/ui/pictures_set_provider_model.dart';
 import 'package:aisi/ui/view/main_view.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MainView(),
+      home:  MainView(),
     );
   }
 }

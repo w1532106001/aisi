@@ -2,13 +2,14 @@ import 'package:aisi/common/base_stateless_view.dart';
 import 'package:aisi/common/down_manager.dart';
 import 'package:aisi/model/entity/pictures_set.dart';
 import 'package:aisi/res/colors.dart';
+import 'package:aisi/ui/pictures_set_provider_model.dart';
 import 'package:aisi/ui/view/look_images_view.dart';
 import 'package:aisi/ui/widget/item_pictures_set_widget.dart';
 import 'package:aisi/utils/permiss_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PicturesSetPreviewView extends BaseStatelessView {
   const PicturesSetPreviewView(this.picturesSet, {Key key}) : super(key: key);
@@ -35,19 +36,34 @@ class PicturesSetPreviewView extends BaseStatelessView {
                   child: ListView(
                     children: [
                       ItemPicturesSetWidget(picturesSet, false),
-                      Container(
-                        child: GestureDetector(
-                          onTap: () => {
-                          PermissUtils.requestPermiss(context)
-                              .then((value) => {
-                          if (value){
-                          DownManager.download(picturesSet,context)
-                          // print('下载当前图集：' + picturesSet.name)
-                          }
-                          })
-                        },
-                          child: Icon(Icons.file_download),
-                        ),
+                      ChangeNotifierProvider(
+                        create: (_) => PicturesSetViewProviderModel(),
+                        child: Consumer<PicturesSetViewProviderModel>(
+                            builder: (_, picturesSetViewProviderModel, __) =>
+                                Container(
+                                  child: GestureDetector(
+                                    onTap: () => {
+                                      if (!picturesSetViewProviderModel.isDown(picturesSet.url))
+                                        {
+                                          PermissUtils.requestPermiss(context)
+                                              .then((value) => {
+                                                    if (value)
+                                                      {
+                                                        DownManager.download(
+                                                            picturesSet,
+                                                            context,picturesSetViewProviderModel)
+                                                        // print('下载当前图集：' + picturesSet.name)
+                                                      }
+                                                  })
+                                        }
+                                    },
+                                    child: Icon(
+                                      Icons.file_download,
+                                      color:
+                                          picturesSetViewProviderModel.isDown(picturesSet.url) ? Colors.grey : Colors.black,
+                                    ),
+                                  ),
+                                )),
                       ),
                       Container(
                         padding: EdgeInsets.only(left: 10, top: 10, right: 10),
@@ -56,22 +72,22 @@ class PicturesSetPreviewView extends BaseStatelessView {
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: data.thumbnailUrlList.length,
                             gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
-                              //横轴元素个数
-                                crossAxisCount: 3,
-                                //纵轴间距
-                                mainAxisSpacing: 0.0,
-                                //横轴间距
-                                crossAxisSpacing: 10.0,
-                                //子组件宽高长度比例
-                                childAspectRatio: 0.75),
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    //横轴元素个数
+                                    crossAxisCount: 3,
+                                    //纵轴间距
+                                    mainAxisSpacing: 0.0,
+                                    //横轴间距
+                                    crossAxisSpacing: 10.0,
+                                    //子组件宽高长度比例
+                                    childAspectRatio: 0.75),
                             itemBuilder: (BuildContext context, int index) {
                               //Widget Function(BuildContext context, int index)
                               return GestureDetector(
                                 child: Center(
                                   child: CachedNetworkImage(
                                       imageUrl:
-                                      picturesSet.thumbnailUrlList[index],
+                                          picturesSet.thumbnailUrlList[index],
                                       fit: BoxFit.fitHeight,
                                       placeholder: (context, url) =>
                                           CircularProgressIndicator(),

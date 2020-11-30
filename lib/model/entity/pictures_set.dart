@@ -174,6 +174,7 @@ class PicturesSet{
 
   static Map<String,dynamic> toMap(PicturesSet picturesSet){
     Map<String,dynamic> map = {
+      "url":picturesSet.url,
       "cover":picturesSet.cover,
       "name":picturesSet.name,
       "quantity":picturesSet.quantity,
@@ -213,5 +214,10 @@ class PicturesSet{
     picturesSet.downTotal = picturesSetMap["downTotal"];
     picturesSet.downType = picturesSetMap["downType"];
     return picturesSet;
+  }
+
+  @override
+  String toString() {
+    return 'PicturesSet{cover: $cover, name: $name, quantity: $quantity, fileSize: $fileSize, updateTime: $updateTime, clickNum: $clickNum, downNum: $downNum, associationName: $associationName, associationUrl: $associationUrl, url: $url, modelName: $modelName, modelUrl: $modelUrl, thumbnailUrlList: $thumbnailUrlList, originalImageUrlList: $originalImageUrlList, downProgress: $downProgress, downTotal: $downTotal, downType: $downType}';
   }
 }

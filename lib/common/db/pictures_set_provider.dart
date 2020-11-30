@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:aisi/model/entity/pictures_set.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -5,8 +7,16 @@ class PicturesSetProvider {
   Database db;
   final String tableName = 'pictures_set';
   final String columnId = 'url';
+  final String _DB_NAME = "pictures_set.common.db";
 
-  Future open(String path) async {
+  Future open() async {
+    var dataBasePath = await getDatabasesPath();
+    String dbName = _DB_NAME;
+    String path = dataBasePath + dbName;
+    if(Platform.isIOS){
+      path = dataBasePath + "/" +dbName;
+    }
+
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute('''
@@ -62,6 +72,37 @@ create table pictures_set (
         whereArgs: [url]);
     if (maps.length > 0) {
       return PicturesSet.fromMap(maps.first);
+    }
+    return null;
+  }
+
+  Future<List<PicturesSet>> getAllPicturesSet() async{
+    List<Map> maps = await db.query(tableName,
+        columns: [
+          "url",
+          "cover",
+          "name",
+          "quantity",
+          "fileSize",
+          "updateTime",
+          "clickNum",
+          "downNum",
+          "associationName",
+          "associationUrl",
+          "modelName",
+          "modelUrl",
+          "thumbnailUrlList",
+          "originalImageUrlList",
+          "downProgress",
+          "downTotal",
+          "downType"
+        ]);
+    if (maps.length > 0) {
+      List<PicturesSet> list = [];
+      maps.forEach((element) {
+        list.add(PicturesSet.fromMap(element));
+      });
+      return list;
     }
     return null;
   }
