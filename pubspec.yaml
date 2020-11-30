@@ -47,6 +47,7 @@ dependencies:
   path_provider: ^1.6.24
   flutter_drag_scale:
     git: https://github.com/LiuC520/flutter_drag_scale.git
+  sqflite: ^1.3.0
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,11 @@
 import 'package:aisi/model/entity/model.dart';
+import 'package:aisi/model/entity/pictrues_set_down_enum.dart';
 import 'package:aisi/net/data_helper.dart';
 import 'package:aisi/net/http_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_html/html_parser.dart';
+
+
 
 class PicturesSet{
   String cover;
@@ -19,6 +22,9 @@ class PicturesSet{
   String modelUrl;
   List<String> thumbnailUrlList = [];
   List<String> originalImageUrlList = [];
+  int downProgress = 0;
+  int downTotal = 0;
+  int downType = PicturesSetDownEnum.NOT_DOWN.index;
 
   static List<PicturesSet> htmlToPicturesSetList(String data){
     var picturesSetList = <PicturesSet>[];
@@ -107,32 +113,6 @@ class PicturesSet{
           .get(url.replaceAll('.html', '') +'_'+ 2.toString() + ".html", params)).whenComplete(() =>
           print('complete'));
 
-      // Future.sync<String>(HttpManager.getInstance()
-      //     .get(url.replaceAll('.html', '') +'_'+ 2.toString() + ".html", params)).then((value) =>
-      //     print(value)
-      // ).catchError((e){
-      //   print(e);
-      // });
-
-      // if(totalPage>1){
-      //   var params = DataHelper.getBaseMap();
-      //   for(int i = 2;i<=totalPage;i++){
-      //   Future.sync(HttpManager.getInstance()
-      //       .get(url +'_'+ i.toString() + ".html", params)).then((value) =>
-      //       print(value)
-      //   ).catchError((e){
-      //     print(e);
-      //     });
-      //  }
-      // }
-
-
-
-      // for (int i = 1; i <= quantity; i++) {
-      //   this.thumbnailUrlList.add(thumbnailUrlTemplate+i.toString()+".jpg");
-      //   this.originalImageUrlList.add(originalImageUrlTemplate+i.toString()+".jpg");
-      //   print(originalImageUrlTemplate+i.toString()+".jpg");
-      // }
     }catch(e){
       print('解析异常'+e);
     }
@@ -190,5 +170,48 @@ class PicturesSet{
     }
 
    return this;
+  }
+
+  static Map<String,dynamic> toMap(PicturesSet picturesSet){
+    Map<String,dynamic> map = {
+      "cover":picturesSet.cover,
+      "name":picturesSet.name,
+      "quantity":picturesSet.quantity,
+      "fileSize":picturesSet.fileSize,
+      "updateTime":picturesSet.updateTime,
+      "clickNum":picturesSet.clickNum,
+      "downNum":picturesSet.downNum,
+      "associationName":picturesSet.associationName,
+      "associationUrl":picturesSet.associationUrl,
+      "modelName":picturesSet.modelName,
+      "modelUrl":picturesSet.modelUrl,
+      "thumbnailUrlList":picturesSet.thumbnailUrlList.join(","),
+      "originalImageUrlList":picturesSet.originalImageUrlList.join(","),
+      "downProgress":picturesSet.downProgress,
+      "downTotal":picturesSet.downTotal,
+      "downType":picturesSet.downType,
+    };
+    return map;
+  }
+
+  static PicturesSet fromMap(Map<String,dynamic> picturesSetMap){
+    PicturesSet picturesSet = new PicturesSet();
+    picturesSet.cover = picturesSetMap["cover"];
+    picturesSet.name = picturesSetMap["name"];
+    picturesSet.quantity = picturesSetMap["quantity"];
+    picturesSet.fileSize = picturesSetMap["fileSize"];
+    picturesSet.updateTime = picturesSetMap["updateTime"];
+    picturesSet.clickNum = picturesSetMap["clickNum"];
+    picturesSet.downNum = picturesSetMap["downNum"];
+    picturesSet.associationName = picturesSetMap["associationName"];
+    picturesSet.associationUrl = picturesSetMap["associationUrl"];
+    picturesSet.modelName = picturesSetMap["modelName"];
+    picturesSet.modelUrl = picturesSetMap["modelUrl"];
+    picturesSet.thumbnailUrlList = picturesSetMap["thumbnailUrlList"].toString().split(",");
+    picturesSet.originalImageUrlList = picturesSetMap["originalImageUrlList"].toString().split(",");
+    picturesSet.downProgress = picturesSetMap["downProgress"];
+    picturesSet.downTotal = picturesSetMap["downTotal"];
+    picturesSet.downType = picturesSetMap["downType"];
+    return picturesSet;
   }
 }
